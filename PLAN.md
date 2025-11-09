@@ -33,8 +33,8 @@ Key gameplay challenge: players can collect and craft tokens from nearby cells t
 - [x] Placing: clicking a nearby empty cell while holding a token drops it there
 - [x] Crafting: clicking a nearby cell with a token of equal value consumes that cell token and upgrades the held token to double value
 - [x] Detect when held token reaches the target value (e.g. 16) and show a win message
-- [ ] Light tuning of visuals so nearby / non-nearby cells are easy to read
-- [ ] Small playtest pass: can I reasonably reach the target token from the starting area?
+- [x] Light tuning of visuals so nearby / non-nearby cells are easy to read
+- [x] Small playtest pass: can I reasonably reach the target token from the starting area?
 
 ## D3.b: Globe-spanning gameplay
 
