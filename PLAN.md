@@ -43,10 +43,14 @@ Key gameplay challenge: Can players craft an even higher value token by moving t
 
 ### D3.b Steps
 
-- [ ] Replace fixed player location with a flexible origin suited for anywhere
-- [ ] Adjust grid math so it works for arbitrary lat/lng without hacks
-- [ ] Let player scroll or simulate movement to reach new bands of cells
-- [ ] Verify deterministic spawning still works globally
+- [ ] Add buttons to move player N/S/E/W by one grid step
+- [ ] Represent grid cells using earth-spanning coordinates anchored at (0,0)
+- [ ] Compute cell indices (i,j) from lat/lng and back to bounds
+- [ ] Use `moveend` to spawn/despawn cells so grid fills the visible map
+- [ ] Keep map scroll independent of player; only nearby cells are interactive
+- [ ] Make cells “memoryless” by dropping their state when they leave the visible region
+- [ ] Increase required victory threshold above D3.a (e.g. 32)
+- [ ] Verify player can craft up to the new threshold by moving and farming tokens
 
 ## D3.c: Object persistence
 
