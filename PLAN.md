@@ -20,19 +20,19 @@ Key gameplay challenge: players can collect and craft tokens from nearby cells t
 
 ### D3.a Steps
 
-- [ ] Remove original starter interaction code and rebuild `main.ts` around our own structure
-- [ ] Create basic layout containers in code (`controlPanel`, `statusPanel`, `map`)
-- [ ] Put a Leaflet map on screen centered on the classroom location
-- [ ] Draw a rectilinear grid of cells over the map using a fixed cell size
-- [ ] Use `luck(...)` to give each cell a consistent initial token state (0 or 1)
-- [ ] Make cell contents visible without clicking (labels / colors)
-- [ ] Add a clear marker for the player’s fixed position
-- [ ] Limit interactions so only nearby cells (about 3 cells away) are usable
-- [ ] Implement one-token inventory UI (hand visible at all times)
-- [ ] Picking up: clicking a nearby cell with a token moves that token into hand and clears the cell
-- [ ] Placing: clicking a nearby empty cell while holding a token drops it there
-- [ ] Crafting: clicking a nearby cell with a token of equal value consumes that cell token and upgrades the held token to double value
-- [ ] Detect when held token reaches the target value (e.g. 16) and show a win message
+- [x] Remove original starter interaction code and rebuild `main.ts` around our own structure
+- [x] Create basic layout containers in code (`controlPanel`, `statusPanel`, `map`)
+- [x] Put a Leaflet map on screen centered on the classroom location
+- [x] Draw a rectilinear grid of cells over the map using a fixed cell size
+- [x] Use `luck(...)` to give each cell a consistent initial token state (0 or 1)
+- [x] Make cell contents visible without clicking (labels / colors)
+- [x] Add a clear marker for the player’s fixed position
+- [x] Limit interactions so only nearby cells (about 3 cells away) are usable
+- [x] Implement one-token inventory UI (hand visible at all times)
+- [x] Picking up: clicking a nearby cell with a token moves that token into hand and clears the cell
+- [x] Placing: clicking a nearby empty cell while holding a token drops it there
+- [x] Crafting: clicking a nearby cell with a token of equal value consumes that cell token and upgrades the held token to double value
+- [x] Detect when held token reaches the target value (e.g. 16) and show a win message
 - [ ] Light tuning of visuals so nearby / non-nearby cells are easy to read
 - [ ] Small playtest pass: can I reasonably reach the target token from the starting area?
 
