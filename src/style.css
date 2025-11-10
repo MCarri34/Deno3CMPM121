@@ -22,3 +22,37 @@
   padding: 1px 2px;
   border-radius: 2px;
 }
+
+#moveControls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+#moveControls > div {
+  display: flex;
+  gap: 4px;
+}
+
+#moveControls button {
+  padding: 4px 10px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+}
+
+#moveControls button:hover {
+  opacity: 0.85;
+}
+
+.token-label span {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 1px 3px;
+  border-radius: 2px;
+  font-size: 10px;
+}

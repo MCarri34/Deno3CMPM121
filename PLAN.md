@@ -43,14 +43,14 @@ Key gameplay challenge: Can players craft an even higher value token by moving t
 
 ### D3.b Steps
 
-- [ ] Add buttons to move player N/S/E/W by one grid step
-- [ ] Represent grid cells using earth-spanning coordinates anchored at (0,0)
-- [ ] Compute cell indices (i,j) from lat/lng and back to bounds
-- [ ] Use `moveend` to spawn/despawn cells so grid fills the visible map
-- [ ] Keep map scroll independent of player; only nearby cells are interactive
-- [ ] Make cells “memoryless” by dropping their state when they leave the visible region
-- [ ] Increase required victory threshold above D3.a (e.g. 32)
-- [ ] Verify player can craft up to the new threshold by moving and farming tokens
+- [x] Add buttons to move player N/S/E/W by one grid step
+- [x] Represent grid cells using earth-spanning coordinates anchored at (0,0)
+- [x] Compute cell indices (i,j) from lat/lng and back to bounds
+- [x] Use `moveend` to spawn/despawn cells so grid fills the visible map
+- [x] Keep map scroll independent of player; only nearby cells are interactive
+- [x] Make cells “memoryless” by dropping their state when they leave the visible region
+- [x] Increase required victory threshold above D3.a (e.g. 32)
+- [x] Verify player can craft up to the new threshold by moving and farming tokens
 
 ## D3.c: Object persistence
 
