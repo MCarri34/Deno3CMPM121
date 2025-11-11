@@ -8,20 +8,19 @@ import "./_leafletWorkaround.ts";
 import luck from "./_luck.ts";
 
 /**
- * D3.a + D3.b - World of Bits
- * Core mechanics + globe-spanning gameplay
+ * World of Bits
+ * D3.a: Core mechanics
+ * D3.b: Globe-spanning gameplay
+ * D3.c: Object persistence (within a single session)
  */
 
 // Config
-
-// Start near the classroom for convenience
 const START_LAT = 36.9914;
 const START_LNG = -122.0609;
 
-// Grid + gameplay tuning
 const CELL_SIZE = 0.00025; // degrees per cell, anchored at (0,0)
 const INTERACTION_RADIUS = 3; // cells
-const TARGET_TOKEN_VALUE = 32; // higher than D3.a
+const TARGET_TOKEN_VALUE = 32; // higher target for D3.b+ / D3.c
 const BASE_TOKEN_PROBABILITY = 0.18;
 
 // Visuals
@@ -39,13 +38,12 @@ const OPACITY = {
 };
 
 // DOM scaffolding
-
 const controlPanelDiv = document.createElement("div");
 controlPanelDiv.id = "controlPanel";
 controlPanelDiv.innerHTML = `
   <h1>World of Bits</h1>
   <p>
-    Use the movement buttons to move your character by one cell.
+    Use the movement buttons to move by one cell.
     Click nearby cells to pick up tokens, drop them, or combine equal values.
     You can only hold one token at a time.
   </p>
@@ -69,7 +67,6 @@ mapDiv.id = "map";
 document.body.appendChild(mapDiv);
 
 // Types + helpers
-
 type CellKey = string;
 
 interface CellCoord {
@@ -108,6 +105,13 @@ function cellToBounds(c: CellCoord): [[number, number], [number, number]] {
   ];
 }
 
+function cellCenterLatLng(c: CellCoord): [number, number] {
+  const b = cellToBounds(c);
+  const lat = (b[0][0] + b[1][0]) / 2;
+  const lng = (b[0][1] + b[1][1]) / 2;
+  return [lat, lng];
+}
+
 function coordKey(c: CellCoord): CellKey {
   return `${c.i},${c.j}`;
 }
@@ -124,7 +128,6 @@ function isNearPlayer(c: CellCoord, player: CellCoord): boolean {
 }
 
 // Leaflet map setup
-
 const map = leaflet.map(mapDiv).setView([START_LAT, START_LNG], 18);
 
 leaflet
@@ -134,54 +137,62 @@ leaflet
   })
   .addTo(map);
 
-// Player starts at the cell containing START_LAT/LNG
+// Player starts in the cell containing the start location
 let playerCell: CellCoord = latLngToCellCoord(START_LAT, START_LNG);
 
-// Player marker lives at the center of their current cell
-const playerMarker = leaflet.circleMarker(cellCenterLatLng(playerCell), {
-  radius: 7,
-  weight: 2,
-  color: "#000000",
-  fillColor: "#ffffff",
-  fillOpacity: 1,
-}).addTo(map);
+// Persistent marker (position updated as player moves)
+const playerMarker = leaflet
+  .circleMarker(cellCenterLatLng(playerCell), {
+    radius: 7,
+    weight: 2,
+    color: "#000000",
+    fillColor: "#ffffff",
+    fillOpacity: 1,
+  })
+  .addTo(map);
 
-function cellCenterLatLng(c: CellCoord): [number, number] {
-  const bounds = cellToBounds(c);
-  const lat = (bounds[0][0] + bounds[1][0]) / 2;
-  const lng = (bounds[0][1] + bounds[1][1]) / 2;
-  return [lat, lng];
-}
+// Cell state + display (Flyweight + Memento style)
 
-// Cell state and visuals
-
-// Ephemeral state for visible cells only (memoryless behavior)
+// Map of modified cells only.
+// Key: "i,j"; Value: CellState with token value.
+// Unmodified cells are implied by baseTokenValue and not stored.
 const cellStates = new Map<CellKey, CellState>();
+
+// Active Leaflet shapes for currently visible cells
 const cellRects = new Map<CellKey, leaflet.Rectangle>();
 const cellLabels = new Map<CellKey, leaflet.Marker>();
 
-// Deterministic base value (0 or 1) from luck, based only on (i,j)
+// Deterministic base value: 0 or 1, from luck.
 function baseTokenValue(c: CellCoord): number {
   const roll = luck(`cell:${c.i},${c.j}:token`);
   return roll < BASE_TOKEN_PROBABILITY ? 1 : 0;
 }
 
-// Current value: if we have a temporary override, use it; else base
+// Current value for a cell (includes persistent overrides)
 function getCellValue(c: CellCoord): number {
   const key = coordKey(c);
-  const state = cellStates.get(key);
-  if (state) return state.value;
+  const override = cellStates.get(key);
+  if (override !== undefined) return override.value;
   return baseTokenValue(c);
 }
 
-// Set cell value; this only applies while cell is visible.
-// Once the cell scrolls out of view and despawns, we drop this.
+// Set cell value and update persistence:
+// - If value == base, remove override (saves memory).
+// - Otherwise store in cellStates (persist across visibility).
 function setCellValue(c: CellCoord, value: number): void {
   const key = coordKey(c);
-  cellStates.set(key, { value });
+  const base = baseTokenValue(c);
+
+  if (value === base) {
+    cellStates.delete(key);
+  } else {
+    cellStates.set(key, { value });
+  }
+
   refreshCellVisual(key);
 }
-// Visible grid management (spawn/despawn on moveend)
+
+// Visible grid management: rebuild from state on each moveend
 
 function refreshVisibleGrid(): void {
   const bounds = map.getBounds();
@@ -191,7 +202,6 @@ function refreshVisibleGrid(): void {
   const west = bounds.getWest();
   const east = bounds.getEast();
 
-  // Compute range of cell indices covering the visible area
   const minI = Math.floor(south / CELL_SIZE) - 1;
   const maxI = Math.floor(north / CELL_SIZE) + 1;
   const minJ = Math.floor(west / CELL_SIZE) - 1;
@@ -199,7 +209,7 @@ function refreshVisibleGrid(): void {
 
   const shouldExist = new Set<CellKey>();
 
-  // Create or update all cells in the visible region
+  // Create/update all visible cells
   for (let i = minI; i <= maxI; i++) {
     for (let j = minJ; j <= maxJ; j++) {
       const coord: CellCoord = { i, j };
@@ -207,11 +217,10 @@ function refreshVisibleGrid(): void {
       shouldExist.add(key);
 
       if (!cellRects.has(key)) {
-        // Create new rectangle
-        const bounds = cellToBounds(coord);
+        const rectBounds = cellToBounds(coord);
         const near = isNearPlayer(coord, playerCell);
 
-        const rect = leaflet.rectangle(bounds, {
+        const rect = leaflet.rectangle(rectBounds, {
           weight: near ? 1.4 : 0.6,
           color: near ? COLORS.nearBorder : COLORS.farBorder,
           fillColor: near ? COLORS.nearFill : COLORS.farFill,
@@ -223,12 +232,12 @@ function refreshVisibleGrid(): void {
         cellRects.set(key, rect);
       }
 
-      // Ensure visuals (including token labels) are up to date
+      // Ensure style/labels match current state
       refreshCellVisual(key);
     }
   }
 
-  // Despawn cells that are no longer visible (forget their state)
+  // Despawn off-screen cells (but keep their state in cellStates)
   for (const [key, rect] of cellRects.entries()) {
     if (!shouldExist.has(key)) {
       rect.removeFrom(map);
@@ -239,9 +248,9 @@ function refreshVisibleGrid(): void {
         label.removeFrom(map);
         cellLabels.delete(key);
       }
-
-      // Forget cell state when off-screen: farming bug allowed (D3.b behavior)
-      cellStates.delete(key);
+      // Important for D3.c:
+      // DO NOT delete cellStates here.
+      // Modified cells survive off-screen and are restored next time.
     }
   }
 }
@@ -291,8 +300,8 @@ function refreshCellVisual(key: CellKey): void {
     cellLabels.set(key, label);
   }
 }
-// Inventory + crafting
 
+// Inventory + crafting
 let heldToken: number | null = null;
 
 function updateStatus(message?: string): void {
@@ -356,8 +365,8 @@ function handleCellClick(coord: CellCoord): void {
     `Cell has ${cellValue}, your hand has ${heldToken}. Values must match to craft.`,
   );
 }
-// Player movement controls
 
+// Player movement controls
 function movePlayer(di: number, dj: number): void {
   playerCell = {
     i: playerCell.i + di,
@@ -366,27 +375,23 @@ function movePlayer(di: number, dj: number): void {
 
   const center = cellCenterLatLng(playerCell);
   playerMarker.setLatLng(center);
-
-  // Optionally recenter map on player move
   map.panTo(center);
 
-  // Recompute which cells are near / far after movement
   refreshVisibleGrid();
   updateStatus("Moved to a new cell. Nearby cells updated.");
 }
 
-// Hook up buttons
+// N/S/E/W buttons
 (document.getElementById("move-n") as HTMLButtonElement).onclick = () =>
-  movePlayer(1, 0);
+  movePlayer(1, 0); // north: increase i → higher lat
 (document.getElementById("move-s") as HTMLButtonElement).onclick = () =>
-  movePlayer(-1, 0);
+  movePlayer(-1, 0); // south
 (document.getElementById("move-w") as HTMLButtonElement).onclick = () =>
   movePlayer(0, -1);
 (document.getElementById("move-e") as HTMLButtonElement).onclick = () =>
   movePlayer(0, 1);
 
-// Map movement: spawn/despawn on moveend
-
+// Map movement: rebuild on moveend
 map.on("moveend", () => {
   refreshVisibleGrid();
 });
@@ -394,5 +399,5 @@ map.on("moveend", () => {
 // Init
 refreshVisibleGrid();
 updateStatus(
-  "Use the movement buttons to explore. Click nearby cells to collect and craft.",
+  "Move around and watch cells remember changes, even after scrolling away.",
 );

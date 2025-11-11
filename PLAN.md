@@ -59,12 +59,12 @@ Key gameplay challenge: Can you fix a gameplay bug where players can farm tokens
 
 ### D3.c Steps
 
-- [ ] Introduce persistent `Map<CellKey, CellState>` keyed by cell coordinates
-- [ ] Store only modified cells (Flyweight-style) to save memory
-- [ ] Stop deleting modified cell state when cells scroll off-screen
-- [ ] On each `moveend`, rebuild visible cells from deterministic base + stored state
-- [ ] Ensure modified cells reappear with correct tokens when they come back into view
-- [ ] Confirm farming exploit is now prevented by persistent cell memory (within a session)
+- [x] Introduce persistent `Map<CellKey, CellState>` keyed by cell coordinates
+- [x] Store only modified cells (Flyweight-style) to save memory
+- [x] Stop deleting modified cell state when cells scroll off-screen
+- [x] On each `moveend`, rebuild visible cells from deterministic base + stored state
+- [x] Ensure modified cells reappear with correct tokens when they come back into view
+- [x] Confirm farming exploit is now prevented by persistent cell memory (within a session)
 
 ## D3.d: Gameplay across real-world space and time
 

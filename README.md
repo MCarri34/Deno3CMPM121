@@ -15,7 +15,7 @@ Players pick up tokens from nearby cells and combine equal ones to craft higher-
 - Token color: `#ff7f7fff`
 - Playtested: players can reach the target tokens within the starting area
 
-## World of Bits – D3.b Completed
+## World of Bits - D3.b Completed
 
 Expanded gameplay across a globe-spanning grid.\
 Players can move their character across the map, collect tokens from new regions, and craft higher-value tokens.
@@ -28,3 +28,23 @@ Players can move their character across the map, collect tokens from new regions
 - Memoryless cells reset when off-screen (farming allowed)
 - Target token threshold to 32 for new win condition
 - Fixed north/south inversion for accurate geographic movement
+
+## World of Bits - D3.c Completed
+
+Cells now persist their state while playing, using memory-efficient design patterns.\
+Modified cells remember their token values even when scrolled off-screen, preventing farming exploits.
+
+### D3.c Features
+
+- Persistent `Map<CellKey, CellState>` for storing only changed cells
+- **Flyweight pattern:** unmodified cells use deterministic generation, saving memory
+- **Memento pattern:** modified cells are restored from stored state when revisited
+- Grid display rebuilt dynamically from persistent data each move
+- Prevents infinite token farming by preserving cell memory
+- State persistence works within a session (page reload resets progress)
+
+### Next (for D3.d)
+
+- Persist cell and player data across page reloads (e.g., via localStorage)
+- Integrate device geolocation for real-world movement
+- Support multi-session play and long-term progression
