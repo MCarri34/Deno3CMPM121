@@ -73,15 +73,15 @@ Key gameplay challenge: Can the user test the game with multiple gameplay sessio
 
 ### D3.d Steps
 
-- [ ] Add a MovementController interface so main game code doesn’t depend on how the player moves (Facade pattern)
-- [ ] Implement ButtonMovementController for simulated movement (N/S/E/W)
-- [ ] Implement GeoMovementController using `navigator.geolocation.watchPosition`
-- [ ] Add a runtime setting (dropdown) to switch between button-based or geolocation-based movement
-- [ ] Add query string support (`?movement=geolocation` or `?movement=buttons`)
-- [ ] Save movement-mode preference to `localStorage`
-- [ ] Add a “New Game” button that clears all saved progress and restarts cleanly
-- [ ] Persist player cell, held token, and modified cell values in `localStorage`
-- [ ] Reload saved state on page load and rebuild map from persistent data
-- [ ] Update player marker using real geolocation when enabled
-- [ ] Ensure gameplay continues exactly where the player left off after closing the page
-- [ ] Allow fully playable multi-session gameplay (real movement + simulated movement)
+- [x] Add a MovementController interface so main game code doesn’t depend on how the player moves (Facade pattern)
+- [x] Implement ButtonMovementController for simulated movement (N/S/E/W)
+- [x] Implement GeoMovementController using `navigator.geolocation.watchPosition`
+- [x] Add a runtime setting (dropdown) to switch between button-based or geolocation-based movement
+- [x] Add query string support (`?movement=geolocation` or `?movement=buttons`)
+- [x] Save movement-mode preference to `localStorage`
+- [x] Add a “New Game” button that clears all saved progress and restarts cleanly
+- [x] Persist player cell, held token, and modified cell values in `localStorage`
+- [x] Reload saved state on page load and rebuild map from persistent data
+- [x] Update player marker using real geolocation when enabled
+- [x] Ensure gameplay continues exactly where the player left off after closing the page
+- [x] Allow fully playable multi-session gameplay (real movement + simulated movement)

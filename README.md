@@ -43,8 +43,17 @@ Modified cells remember their token values even when scrolled off-screen, preven
 - Prevents infinite token farming by preserving cell memory
 - State persistence works within a session (page reload resets progress)
 
-### Next (for D3.d)
+## World of Bits - D3.d Completed
 
-- Persist cell and player data across page reloads (e.g., via localStorage)
-- Integrate device geolocation for real-world movement
-- Support multi-session play and long-term progression
+The game now supports real-world movement and persistent progress.\
+Players can move by physically walking around or by using the button-based simulator, and all game state is saved automatically across sessions.
+
+### D3.d Features
+
+- Geolocation-based movement using `navigator.geolocation.watchPosition`
+- Option to switch between geolocation and button-based movement at runtime
+- Movement system encapsulated using a `MovementController` interface (Facade pattern)
+- All game state (player cell, held token, modified cells) saved in `localStorage`
+- Game automatically reloads previous progress on startup
+- New Game button clears saved data and restarts the world
+- Fully supports multi-session play using both real-world and simulated movement
